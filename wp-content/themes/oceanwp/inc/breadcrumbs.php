@@ -34,13 +34,13 @@
 function oceanwp_breadcrumb_trail( $args = array() ) {
 
 	// Return if breadcrumbs are disabled
-	if ( ! get_theme_mod( 'ocean_breadcrumbs', true )
+	if ( ! oceanwp_has_breadcrumbs()
 		|| is_front_page() ) {
 		return;
 	}
 	
 	// Yoast breadcrumbs
-	if ( function_exists( 'yoast_breadcrumb' ) && current_theme_supports( 'yoast-seo-breadcrumbs' ) ) {
+	if ( function_exists( 'yoast_breadcrumb' ) ) {
 		$classes = 'site-breadcrumbs clr';
 		if ( $breadcrumbs_position = get_theme_mod( 'ocean_breadcrumbs_position' ) ) {
 			$classes .= ' position-'. $breadcrumbs_position;
@@ -167,7 +167,7 @@ class OceanWP_Breadcrumb_Trail {
 	 * @access public
 	 * @return string
 	 */
-	public function trail() {
+	public function get_trail() {
 
 		// Set up variables that we'll need.
 		$breadcrumb    = '';
@@ -178,7 +178,7 @@ class OceanWP_Breadcrumb_Trail {
 		if ( 0 < $item_count ) {
 
 			// Open the unordered list.
-			$breadcrumb .= '<ul class="trail-items" itemscope itemtype="http://schema.org/BreadcrumbList">';
+			$breadcrumb .= '<ul class="trail-items"'. oceanwp_get_schema_markup( 'breadcrumb' ) .'>';
 
 			// Add the number of items and item list order schema.
 			$breadcrumb .= sprintf( '<meta name="numberOfItems" content="%d" />', absint( $item_count ) );
@@ -194,7 +194,7 @@ class OceanWP_Breadcrumb_Trail {
 				preg_match( '/(<a.*?>)(.*?)(<\/a>)/i', $item, $matches );
 
 				// Wrap the item text with appropriate itemprop.
-				$item = !empty( $matches ) ? sprintf( '%s<span itemprop="name">%s</span>%s', $matches[1], $matches[2], $matches[3] ) : sprintf( '<span itemprop="name">%s</span>', $item );
+				$item = !empty( $matches ) ? sprintf( '%s<span'. oceanwp_get_schema_markup( 'author_name' ) .'>%s</span>%s', $matches[1], $matches[2], $matches[3] ) : sprintf( '<span'. oceanwp_get_schema_markup( 'author_name' ) .'>%s</span>', $item );
 
 				// Add list item classes.
 				$item_class = 'trail-item';
@@ -206,10 +206,10 @@ class OceanWP_Breadcrumb_Trail {
 					$item_class .= ' trail-end';
 
 				// Create list item attributes.
-				$attributes = 'itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem" class="' . $item_class . '"';
+				$attributes = 'class="' . $item_class . '"'. oceanwp_get_schema_markup( 'breadcrumb_list' ) .'';
 
 				// Build the meta position HTML.
-				$meta = sprintf( '<meta itemprop="position" content="%s" />', absint( $item_position ) );
+				$meta = sprintf( '<meta content="%s"'. oceanwp_get_schema_markup( 'position' ) .' />', absint( $item_position ) );
 
 				// Build the list item.
 				$breadcrumb .= sprintf( '<li %s>%s%s</li>', $attributes, $item, $meta );
@@ -226,7 +226,7 @@ class OceanWP_Breadcrumb_Trail {
 
 			// Wrap the breadcrumb trail.
 			$breadcrumb = sprintf(
-				'<%1$s role="navigation" aria-label="%2$s" class="site-breadcrumbs oceanwp-clr'. $p_class .'" itemprop="breadcrumb">%3$s%4$s%5$s</%1$s>',
+				'<%1$s role="navigation" aria-label="%2$s" class="site-breadcrumbs clr'. $p_class .'"'. oceanwp_get_schema_markup( 'breadcrumb_itemprop' ) .'>%3$s%4$s%5$s</%1$s>',
 				tag_escape( $this->args['container'] ),
 				esc_attr( $this->labels['aria_label'] ),
 				$this->args['before'],
@@ -238,10 +238,19 @@ class OceanWP_Breadcrumb_Trail {
 		// Allow developers to filter the breadcrumb trail HTML.
 		$breadcrumb = apply_filters( 'breadcrumb_trail', $breadcrumb, $this->args );
 
-		if ( false === $this->args['echo'] )
-			return $breadcrumb;
+		return $breadcrumb;
+	}
 
-		echo $breadcrumb;
+	/**
+	 * Echo the breadcrumb trail.
+	 *
+	 * @since  0.6.0
+	 * @access public
+	 * @return string
+	 */
+	public function trail() {
+
+		echo $this->get_trail();
 	}
 
 	/* ====== Protected Methods ====== */
@@ -609,12 +618,13 @@ class OceanWP_Breadcrumb_Trail {
 			} else {
 				$post_type_object = get_post_type_object( $taxonomy->object_type[0] );
 
-				$label = !empty( $post_type_object->labels->archive_title ) ? $post_type_object->labels->archive_title : $post_type_object->labels->name;
+				$label 	= !empty( $post_type_object->labels->archive_title ) ? $post_type_object->labels->archive_title : $post_type_object->labels->name;
 
 				// Core filter hook.
-				$label = apply_filters( 'post_type_archive_title', $label, $post_type_object->name );
+				$label 	= apply_filters( 'post_type_archive_title', $label, $post_type_object->name );
+				$url 	= apply_filters( 'post_type_archive_url', get_post_type_archive_link( $post_type_object->name ) );
 
-				$this->items[] = sprintf( '<a href="%s">%s</a>', esc_url( get_post_type_archive_link( $post_type_object->name ) ), $label );
+				$this->items[] = sprintf( '<a href="%s">%s</a>', esc_url( $url ), $label );
 			}
 		}
 

@@ -1,5 +1,307 @@
 # OceanWP Changelog
 
+### *2018.01.02* - 1.4.11
+* **Added** - New field for the Vertical header style to choose when you want to collapse it.
+* **Added** - Category description as subheading.
+* **Added** - Ability to display a custom excerpt for the search result page.
+* **Fixed** - Infinite Scroll image issue on Safari.
+* **Fixed** - Issue with Yoast Breadcrumb.
+* **Fixed** - Blog entries image issue.
+* **Fixed** - Some WooCommerce styling issues.
+* **Fixed** - Undefined mobile_footer_left_padding variable.
+* **Fixed** - Medium header "sticky header" padding issue.
+* **Fixed** - Issue with the Mobile logo if the header is fixed on mobile view.
+
+### *2017.12.10* - 1.4.10
+* **Fixed** - Boxed layout issue.
+
+### *2017.12.09* - 1.4.9
+* **Added** - New field in the Mobile Menu section of the customizer to allow you to add a custom header height in tablet and mobile view.
+* **Added** - Ability to add caption for the featured posts images.
+* **Added** - Filter "ocean_default_color_palettes", to allow you to change the default color palettes of the color options in the customizer.
+* **Added** - New checkbox field "Add container" in the Footer Widget section of the customizer to allow you to remove the footer container.
+* **Added** - Compatibility with the new Gutenberg alignment: Align Wide and Align Full.
+* **Added** - New option in the Single Post section of the customizer to control or disable the content max width in full width layout for the new single post style.
+* **Added** - Infinite scrolling for the Shop and taxonomies pages, you just need to select it via the WooCommerce > Archives section of the customizer.
+* **Added** - New section in the Typography section of the customizer to allow you to change the product price typography.
+* **Tweak** - Better styling of the single post when you use the full width layout (same design as Gutenberg).
+* **Fixed** - Issue with the 0 number which is not taken into account in the customizer fields.
+* **Fixed** - Z-index issue with the Full Screen header style.
+* **Fixed** - Issue with the Max Width and Max Height fields in Header > Logo.
+* **Fixed** - Anchor links issue if a custom mobile menu is used.
+* **Fixed** - Mobile logo issue if you use a custom breakpoint.
+* **Fixed** - Issue with a custom background color when using the parallax footer effect.
+* **Fixed** - Issue with anchor links and the medium header style.
+
+### *2017.11.18* - 1.4.8
+* **Fixed** - Issue with the mobile menu link on IOS 9.
+* **Fixed** - Issue on IOS with the Underline Form Left menu item effect.
+
+### *2017.11.16* - 1.4.7
+* **Added** - New select template field in Header > Menu to allow you to select a template created in Theme Panel > My Library to replace the navigation. Perfect to use the Nav Menu widget of Elementor Pro with any header styles.
+* **Added** - OceanWP is now 100% WooCommerce compatible, so you can use external plugins as WC Vendors without problems.
+* **Added** - Polish translation, thank you very much to Rafał Stępień.
+* **Tweak** - The product taxonomy description are now above the products instead of under the page title.
+* **Tweak** - Cart icon on mobile view, now the cart will be exactly the same as desktop view.
+* **Fixed** - Top bar menu under header.
+* **Fixed** - Issue on the Checkout if third party plugins add new fields.
+* **Fixed** - WooCommerce gallery images if not shop page.
+* **Fixed** - WooCommerce select issue on the cart page.
+* **Fixed** - WooCommerce table issue on the checkout page.
+* **Fixed** - Social icons on the sidebar mobile menu style.
+* **Fixed** - Color control issue with WordPress 4.9.
+* **Deleted** - Custom JS textarea, moved in Ocean Extra.
+
+### *2017.11.03* - 1.4.6
+* **Fixed** - Icon issue with the Sidebar mobile menu style.
+
+### *2017.11.03* - 1.4.5
+* **Fixed** - Issue with the Sidebar mobile menu style.
+
+### *2017.11.02* - 1.4.4
+* **Fixed** - is_plugin_active fatal error for WordPress Social Login.
+
+### *2017.11.02* - 1.4.3
+* **Added** - Translation with WPML for the custom theme's parts, see this article: http://docs.oceanwp.org/article/474-translate-custom-parts-of-the-theme-with-wpml
+* **Added** - Compatibility with WooCommerce Enhanced Layered Navigation.
+* **Added** - Compatibility with WordPress Social Login.
+* **Added** - Some CSS fixes for Gutenberg.
+* **Added** - bbPress compatibility.
+* **Added** - BuddyPress compatibility.
+* **Tweak** - Parallax footer code improved.
+* **Updated** - French translation, thanks to freepixel.net.
+* **Fixed** - Mobile menu drop down behind the sale and zoom icon of the single product page.
+* **Fixed** - Add to cart background color hover in the customizer.
+* **Fixed** - Product variables price color.
+* **Fixed** - Product quantity number input on Firefox.
+* **Fixed** - Gallery lightbox issue.
+* **Fixed** - Sidebar issue if full width or full screen layout selected.
+
+### *2017.10.19* - 1.4.2
+* **Added** - Magnific Popup script instead of Chocolat, better lightbox script.
+* **Fixed** - Styling issue with the Full Screen mobile menu style.
+* **Fixed** - "Latest In" in posts megamenu not translatable.
+* **Updated** - Theme screenshot.
+
+### *2017.10.14* - 1.4.1
+* **Tweak** - Social menu is now displayed even if there is no main menu.
+* **Fixed** - Responsive top bar social issue.
+
+### *2017.10.13* - 1.4.0
+* **Added** - New Header Style "Vertical" with many options. You can also put the header transparent with a background when scrolling if you use Ocean Sticky Header.
+* **Added** - New Layout Style "Separate" in General Options > General Settings.
+* **Added** - New layout style "Both Sidebars" with options to choose between "Sidebar / Sidebar / Content - Sidebar / Content / Sidebar - Content / Sidebar / Sidebar" and options to add your own content and sidebars width.
+* **Added** - Parallax Footer effect, you just need to activate it via the Footer Widgets section of the customizer.
+* **Added** - New checkbox field to add the Full Screen, Center and Medium header styles transparent.
+* **Added** - New blog entries style "Thumbnail".
+* **Added** - New field to select a template to replace the header social menu.
+* **Added** - New logo field in Header > Mobile Menu to display a different logo in responsive. You can also choose the media query where you want to display the logo
+* **Added** - New fields in WooCommerce > Advanced Styling to control the background, color, border color, border width and border radius of the Add to Cart button of the shop page and for the Typography in Typography > WooCommerce Product Add To Cart.
+* **Added** - WooCommerce Sensei support.
+* **Added** - Two new options to allow you to add a custom with and height for the blog entries images.
+* **Added** - New select fields to allow you to choose your heading tag your the page title, blog entries title and single post title.
+* **Added** - New field to choose the title and breadcrumb position if you use the Background Image style for the page header.
+* **Added** - Overlay color field in Header > Header Media, now you can add an overlay color when you add a media in the header.
+* **Tweak** - IMPORTANT, big improvement on the Center header style, if you use this header style, read this article: http://docs.oceanwp.org/article/467-improvement-on-the-center-header-style
+* **Tweak** - The lightbox scripts and style are now in seperate files to easily disable them if you can't use the Scripts & Styles panel.
+* **Tweak** - CSS improvement for the WooCommerce cart page in responsive.
+* **Tweak** - Search Source field moved to General Options > General Settings.
+* **Tweak** - Better approach for the retina logo.
+* **Tweak** - Better approach to call the custom hamburgers button, now just the selected style is called.
+* **Updated** - Infinite Scroll script.
+* **Fixed** - Issue with the CSS file for the custom parts of the theme created via Elementor (custom header, custom footer, etc ...).
+* **Fixed** - Issue with the lightbox images when you disable a script or style in Theme Panel > Scripts & Styles.
+* **Fixed** - Issue with the search mobile if you select a search post type.
+* **Fixed** - Disaable link on Sidebar mobile menu style.
+* **Fixed** - Z-index issue with Divi builder.
+* **Fixed** - Bug with overlay in Chrome.
+* **Deleted** - All Deprecated fields.
+
+### *2017.09.18* - 1.3.9
+* **Fixed** - Undefined $content variable error in the top bar content.
+
+### *2017.09.17* - 1.3.8
+* **Fixed** - Undefined $get_content variable error in the header.
+
+### *2017.09.17* - 1.3.7
+NOTE: After the theme update, if you have disabled any scripts or styles, go to Theme Panel > Scripts & Styles, and click on Save Changes to update the JS and CSS files.
+
+* **Added** - New field to select a template created in Theme Panel > My Library for the top bar content.
+* **Added** - New section "404 Error Page" in General Options with two new options, "layout" to select between full width and full screen layout and "Blank Page", if enable this option will remove all the elements (top bar, header, title, footer) to give you full control to create your error page with your page builder.
+* **Added** - New field in Header > Menu to select a post type for the search.
+* **Added** - New field in General Options > General Settings to control the posts per page on the search results page.
+* **Added** - Close mobile menu text for the drop down mobile menu style.
+* **Added** - Custom hamburgers button with effects for the mobile menu.
+* **Added** - Spanish language, thank you to Angel Julian Mena.
+* **Tweak** - All header styles settings added into the Header > General section of the customizer.
+* **Tweak** - Better styling for the search result page.
+* **Tweak** - Names added for the menu links effects, thanks to Verdi.
+* **Fixed** - Error in the Elementor edit mode when WooCommerce was enabled, the cart icon is removed in the edit mode to avoid error.
+* **Fixed** - Issue with the sticky mobile when the "Stick only the menu" is enable on the Medium Header style.
+* **Fixed** - Issue with the first row on the edit mode on Beaver Builder.
+* **Fixed** - Color link in the button of the principal menu.
+* **Fixed** - Comments words not translated.
+* **Fixed** - Side panel button displayed in the drop down and full screen mobile menu styles.
+* **Fixed** - Issue with the cart page url in the cart icon on mobile.
+* **Fixed** - Issue with emoticons in the comments.
+* **Fixed** - Blog archives layout on the tag, date and author pages.
+* **Fixed** - Issue with the close button of the Full Screen mobile menu style.
+
+### *2017.08.25* - 1.3.6
+* **Fixed** - Issue with the search overlay style.
+
+### *2017.08.24* - 1.3.5
+* **Added** - 10 menu links effects, go to Header > Menu.
+* **Added** - Brazil Portuguese translation, thanks a lot to Camilla Ribeiro.
+* **Tweak** - Some CSS codes.
+* **Fixed** - "add_to_cart_fragments" replaced by "woocommerce_add_to_cart_fragments".
+* **Fixed** - Text "Type then hit enter to search..." not translatable.
+* **Fixed** - Conflicts between the Transparent header style and the Elementor top section, now the header is hided in the Elementor edit mode.
+
+### *2017.08.16* - 1.3.4
+* **Fixed** - Values of the OceanWP Settings metabox not saved in the LifterLMS Courses post type.
+* **Fixed** - No menu on the Drop down and Full Screen mobile menu styles when you add a custom mobile menu.
+* **Fixed** - Issue with Divi builder when you select the tablet or mobile view.
+* **Fixed** - Small scroll effect issue with the Modal Window extension.
+
+### *2017.08.04* - 1.3.3
+* **Fixed** - Issue with the mobile menu breakpoint code.
+
+### *2017.08.04* - 1.3.2
+* **Fixed** - Fatal issue with the WooCommerce icon in the navigation.
+
+### *2017.08.03* - 1.3.1
+* **Fixed** - Anchor link in the Full Screen mobile menu style.
+* **Fixed** - Issue with the Navigation widget of Ocean Elementor Widgets.
+* **Fixed** - JS error "$left is not defined".
+
+### *2017.08.02* - 1.3.0
+* **Added** - Full support for PHP 7.1.
+* **Added** - Drop down mobile menu style.
+* **Added** - Full Screen mobile menu style.
+* **Added** - Breakpoint for the mobile menu, now you can add your own breakpoint to display the mobile menu link.
+* **Added** - Max Height field in the Header > Logo section of the customizer to allow you to add a max height if your logo is too big.
+* **Added** - Top Bar Social Alt. field supports templates created with your page builder.
+* **Added** - Overlay with spinner on the checkout page when the order button is clicked.
+* **Added** - Next/Prev Taxonomy field, now you will be able to display the next/prev single post links by category or tag.
+* **Added** - Related Posts Taxonomy field, now you will be able to display your related post by category or tag.
+* **Added** - Turkish language, partially translated by Selçuk Akkaş.
+* **Added** - New checkbox field in General Options > General Settings to allow you to disable the theme schema markup.
+* **Added** - LifterLMS support.
+* **Added** - Filter in the single post heading to allow you to change the heading tab via your child theme.
+* **Added** - Ability to display blog entry full content.
+* **Added** - New option to only stick the navigation when scrolling for the Medium header style.
+* **Tweak** - Anchor link doesn't have automatically scrolling effect anymore, you will need to add the "local" class to your link to have this effect. This is for avoid any plugins conflict.
+* **Tweak** - WooCommerce error message style improved.
+* **Tweak** - Anchor link in the mobile menu, no need anymore to add the "local-scroll" class.
+* **Fixed** - Anchor menu on the Full Screen header style, now the menu close after the click on the anchor link.
+* **Fixed** - Custom Header and Custom Footer issue in the Elementor edit mode.
+* **Fixed** - Top Bar style when there is no social.
+* **Fixed** - Beaver Builder tabs under the header.
+* **Fixed** - Page header color setting per page.
+* **Fixed** - Current menu color in child child menu.
+
+### *2017.07.07* - 1.2.9
+* **Added** - New filter in the breadcrumb for the Ocean Porffolio extension.
+* **Added** - Supports WooCommerce Match Box extension, thanks to Sébastien Dumont.
+* **Fixed** - Tabs under the header in the edit mode with the transparent header style.
+* **Updated** - Isotope script.
+
+### *2017.06.29* - 1.2.8
+* **Fixed** - WooCommerce section disappear when Beaver Themer is enabled.
+
+### *2017.06.29* - 1.2.7
+* **Added** - New option in WooCommerce > General section of the customizer to allow you to display the categories featured image before the products archives on the categories pages.
+* **Added** - New option in WooCommerce > Single of the customizer to allow you to hide the related products.
+* **Fixed** - Issue with custom header and custom footer when no Elementor widgets were added, thanks to KingYes from the Elementor team.
+* **Fixed** - Issue with Elementor sections links in the editor mode when you have the transparent header style.
+
+### *2017.06.19* - 1.2.6
+* **Fixed** - Double lighbox icon on the single product images.
+
+### *2017.06.19* - 1.2.5
+* **Added** - Fully compatible with Beaver Themer.
+* **Tweak** - Page header background image style CSS improved.
+* **Fixed** - Issue with WooCommerce products in list view when you add custom columns in responsive.
+* **Deleted** - Custom scripts for the WooCommerce single products images, too many issues.
+
+### *2017.06.12* - 1.2.4
+* **Added** - French translation, thank you very much to Jean Lagarrigue.
+* **Fixed** - Number options input issue in the customizer.
+
+### *2017.06.12* - 1.2.3
+* **Fixed** - Excerpt issue.
+
+### *2017.06.12* - 1.2.2
+* **Fixed** - Issue with page header opacity options in the customizer.
+
+### *2017.06.11* - 1.2.1
+* **Fixed** - Issue with top bar content.
+
+### *2017.06.10* - 1.2.0.1
+* **Added** - All sanitize_callback for the customizer options.
+* **Fixed** - Hiding menu text did not work.
+
+### *2017.06.08* - 1.2.0
+* **Added** - New menu field "Elementor Template" to allow you to add an Elementor template in your mega menu.
+* **Added** - New select field to choose an elementor template (or a page if you use another page builder) to replace the 404 error page content in General Options > General Settings of the customizer.
+* **Added** - Checkbox field in the Menu Cart customizer section to hide the menu cart if empty.
+* **Added** - New display style in the Menu Cart customizer section for the WooCommerce cart icon, now you can display the count and the cart total at the same time.
+* **Added** - Control in the Menu Cart customizer section to select a different cart icon.
+* **Added** - Text control in the Menu Cart customizer section to add your own cart icon.
+* **Added** - Slider control in the Menu Cart customizer section to allow you to add your own cart icon size, even for the responsive.
+* **Added** - Width field in the WooCommerce customizer section to control the cart dropdown width.
+* **Added** - Slider control for the WooCommerce archives columns field, now you can add a custom column for tablet and mobile.
+* **Added** - Checkbox field in the Mobile Menu customizer section to show/hide the mobile menu opening button text.
+* **Added** - Text field in the Mobile Menu customizer section to add your own text for the mobile menu opening button.
+* **Added** - Text field in the Mobile Menu customizer section to add your own icon class for the mobile menu opening button.
+* **Added** - Checkbox field in the Mobile Menu customizer section to show/hide the mobile menu close button.
+* **Added** - Switch field in the Mobile Menu customizer section to allow you to open your dropdowns with the parent link.
+* **Added** - Text field in the Mobile Menu customizer section to add your own text for the mobile menu close button.
+* **Added** - Text field in the Mobile Menu customizer section to add your own icon class for the mobile menu close button.
+* **Added** - Checkbox field in the Blog Entries customizer section to show/hide the overlay on the image hover on the blog.
+* **Added** - Filter for the blog entries headings, now you can add your own heading tag through this filter.
+* **Fixed** - Search input focus on the icon click.
+* **Fixed** - Comments pagination issue.
+* **Fixed** - Issue with WPML string translation.
+* **Fixed** - Issue with the Apply Coupon button on the checkout page.
+* **Fixed** - Phone and Email input issue on the checkout page.
+* **Fixed** - Textarea height issue with the forms widget of Elementor.
+* **Fixed** - Issue with the search overlay and the center menu, now the close button is directly into the overlay.
+* **Fixed** - Quantity buttons issue in the WooCommerce Cart page.
+* **Fixed** - Avatar issue in the WooCommerce My Account page.
+* **Fixed** - Page header overlay opacity issue for the background image style.
+* **Fixed** - RTL lighbox style issue.
+
+### *2017.04.24* - 1.1.9.1
+* **Fixed** - Small issue with the category products images.
+
+### *2017.04.23* - 1.1.9
+* **Added** - Sortable control in the customizer for the catalog products, now you can reorder the elements.
+* **Added** - Mega menu 1 column.
+* **Added** - New menu location"Mobile" for the mobile menu.
+* **Added** - Font subsets in the typography section of the customizer.
+* **Added** - Minification for the Custom CSS output.
+* **Added** - Dutch translation, thank you to Verdi Heinz and its team.
+* **Added** - Now you can add a mega menu to the top bar menu.
+* **Added** - Filter for the meta in the customizer to add your own meta, see this [article](http://docs.oceanwp.org/article/430-add-your-own-meta).
+* **Added** - Font size and padding fields for the top bar social in the customizer.
+* **Added** - Width and height fields in the customizer to add your own size for the related posts images.
+* **Added** - Support for the WooCommerce single product gallery zoom.
+* **Added** - Tabs Position field in the WooCommerce customizer section to choose the positioning of your tabs on single product.
+* **Added** - Color control in the customizer for the placeholder text of the overlay search style.
+* **Added** - Color control for the border widgets titles.
+* **Fixed** - Issue with WooCommerce cart dropdown on RTL.
+* **Fixed** - Skype and Email URL issue for the top bar and social menu.
+* **Fixed** - Hided logo if one column on responsive for the medium header style.
+* **Fixed** - Top bar content preview issue when it has no content.
+* **Fixed** - Title of latest posts in megamenu does not break to second line.
+* **Tweak** - The top bar menu is automatically added to the mobile menu.
+* **Tweak** - The top bar menu is automatically centered horizontally.
+* **Tweak** - Style enhancement for the WooCommerce checkout page.
+* **Tweak** - The next/prev post is entirely clickable.
+* **Deleted** - The "Add Lightbox To Your Images" field is deleted from the theme because it is directly incorporated into Theme Panel > Scripts & Styles.
+
 ### *2017.04.05* - 1.1.8
 * **Added** - New header style "Medium".
 * **Added** - New "Visibility" select field in the customizer to allow you to show/hide some elements on tablets and mobiles like the Top Bar, Page Header, Footer Widgets, Footer Bottom.

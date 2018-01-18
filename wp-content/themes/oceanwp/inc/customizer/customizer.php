@@ -42,35 +42,39 @@ if ( ! class_exists( 'OceanWP_Customizer' ) ) :
 			// Path
 			$dir = OCEANWP_INC_DIR . 'customizer/controls/';
 
-			// Add the controls
-			require_once( $dir . 'buttonset/class-control-buttonset.php' );
-			require_once( $dir . 'color/class-control-color.php' );
-			require_once( $dir . 'dimensions/class-control-dimensions.php' );
-			require_once( $dir . 'dropdown-pages/class-control-dropdown-pages.php' );
-			require_once( $dir . 'heading/class-control-heading.php' );
-			require_once( $dir . 'icon-select/class-control-icon-select.php' );
-			require_once( $dir . 'multicheck/class-control-multicheck.php' );
-			require_once( $dir . 'radio-image/class-control-radio-image.php' );
-			require_once( $dir . 'range/class-control-range.php' );
-			require_once( $dir . 'slider/class-control-slider.php' );
-			require_once( $dir . 'sortable/class-control-sortable.php' );
-			require_once( $dir . 'textarea/class-control-textarea.php' );
-			require_once( $dir . 'typography/class-control-typography.php' );
+			// Load customize control classes
+			require_once( $dir . 'buttonset/class-control-buttonset.php' 					);
+			require_once( $dir . 'color/class-control-color.php' 							);		
+			require_once( $dir . 'dimensions/class-control-dimensions.php' 					);
+			require_once( $dir . 'dropdown-pages/class-control-dropdown-pages.php' 			);
+			require_once( $dir . 'heading/class-control-heading.php' 						);
+			require_once( $dir . 'icon-select/class-control-icon-select.php' 				);
+			require_once( $dir . 'multicheck/class-control-multicheck.php' 					);
+			require_once( $dir . 'multiple-select/class-control-multiple-select.php' 		);
+			require_once( $dir . 'radio-image/class-control-radio-image.php' 				);
+			require_once( $dir . 'range/class-control-range.php' 							);
+			require_once( $dir . 'slider/class-control-slider.php' 							);
+			require_once( $dir . 'sortable/class-control-sortable.php' 						);
+			require_once( $dir . 'textarea/class-control-textarea.php' 						);
+			require_once( $dir . 'typo/class-control-typo.php' 								);
+			require_once( $dir . 'typography/class-control-typography.php' 					);
 
-			// Register the controls
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Buttonset_Control' );
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Color_Control' );
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Dimensions_Control' );
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Dropdown_Pages' );
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Heading_Control' );
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Icon_Select_Control' );
-			$wp_customize->register_control_type( 'OceanWP_Customize_Multicheck_Control' );
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Range_Control' );
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Slider_Control' );
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Radio_Image_Control' );
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Sortable_Control' );
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Textarea_Control' );
-			$wp_customize->register_control_type( 'OceanWP_Customizer_Typography_Control' );
+			// Register JS control types
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Buttonset_Control' 		);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Color_Control' 			);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Dimensions_Control' 		);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Dropdown_Pages' 			);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Heading_Control' 			);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Icon_Select_Control' 		);
+			$wp_customize->register_control_type( 'OceanWP_Customize_Multicheck_Control' 		);
+			$wp_customize->register_control_type( 'OceanWP_Customize_Multiple_Select_Control' 	);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Range_Control' 			);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Slider_Control' 			);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Radio_Image_Control' 		);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Sortable_Control' 		);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Textarea_Control' 		);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Typo_Control' 			);
+			$wp_customize->register_control_type( 'OceanWP_Customizer_Typography_Control' 		);
 
 		}
 
@@ -81,6 +85,7 @@ if ( ! class_exists( 'OceanWP_Customizer' ) ) :
 		 */
 		public function controls_helpers() {
 			require_once( OCEANWP_INC_DIR .'customizer/customizer-helpers.php' );
+			require_once( OCEANWP_INC_DIR .'customizer/sanitization-callbacks.php' );
 		}
 
 		/**
@@ -94,25 +99,8 @@ if ( ! class_exists( 'OceanWP_Customizer' ) ) :
 			$wp_customize->get_setting( 'blogname' )->transport 		= 'postMessage';
 			$wp_customize->get_setting( 'blogdescription' )->transport 	= 'postMessage';
 
-			// Remove core sections
-			$wp_customize->remove_section( 'colors' );
-			$wp_customize->remove_section( 'themes' );
-			$wp_customize->remove_section( 'background_image' );
-
-			// Remove core controls
-			$wp_customize->remove_control( 'header_textcolor' );
-			$wp_customize->remove_control( 'background_color' );
-			$wp_customize->remove_control( 'background_image' );
-
-			// Remove default settings
-			$wp_customize->remove_setting( 'background_color' );
-			$wp_customize->remove_setting( 'background_image' );
-
 			// Move custom logo setting
-			$wp_customize->get_control( 'custom_logo' )->section = 'ocean_header_logo';
-
-			// Move custom css setting
-			$wp_customize->get_control( 'custom_css' )->section = 'ocean_custom_code_panel';
+			$wp_customize->get_control( 'custom_logo' )->section 		= 'ocean_header_logo';
 
 		}
 
@@ -126,47 +114,43 @@ if ( ! class_exists( 'OceanWP_Customizer' ) ) :
 			// Var
 			$dir = OCEANWP_INC_DIR .'customizer/settings/';
 
-			// Options
-			if ( get_theme_mod( 'oe_general_panel_enable', true ) ) {
-				require_once( $dir .'general.php' );
+			// Customizer files array
+			$files = array(
+				'general',
+				'typography',
+				'topbar',
+				'header',
+				'blog',
+				'sidebar',
+				'footer-widgets',
+				'footer-bottom',
+			);
+
+			foreach ( $files as $key ) {
+
+				$setting = str_replace( '-', '_', $key );
+
+				// If Ocean Extra is activated
+				if ( OCEAN_EXTRA_ACTIVE
+					&& class_exists( 'Ocean_Extra_Theme_Panel' ) ) {
+
+					if ( Ocean_Extra_Theme_Panel::get_setting( 'oe_'. $setting .'_panel' ) ) {
+						require_once( $dir . $key .'.php' );
+					}
+
+				} else {
+
+					require_once( $dir . $key .'.php' );
+
+				}
+
 			}
 
-			if ( get_theme_mod( 'oe_typography_panel_enable', true ) ) {
-				require_once( $dir .'typography.php' );
-			}
-
-			if ( get_theme_mod( 'oe_topbar_panel_enable', true ) ) {
-				require_once( $dir .'topbar.php' );
-			}
-
-			if ( get_theme_mod( 'oe_header_panel_enable', true ) ) {
-				require_once( $dir .'header.php' );
-			}
-
-			if ( get_theme_mod( 'oe_blog_panel_enable', true ) ) {
-				require_once( $dir .'blog.php' );
-			}
-
-			if ( get_theme_mod( 'oe_sidebar_panel_enable', true ) ) {
-				require_once( $dir .'sidebar.php' );
-			}
-
-			if ( get_theme_mod( 'oe_footer_widgets_panel_enable', true ) ) {
-				require_once( $dir .'footer-widgets.php' );
-			}
-
-			if ( get_theme_mod( 'oe_footer_bottom_panel_enable', true ) ) {
-				require_once( $dir .'footer-bottom.php' );
-			}
-
-			if ( OCEANWP_WOOCOMMERCE_ACTIVE
-				&& get_theme_mod( 'oe_woocommerce_panel_enable', true ) ) {
+			// If WooCommerce is activated
+			if ( OCEANWP_WOOCOMMERCE_ACTIVE ) {
 				require_once( $dir .'woocommerce.php' );
 			}
 
-			if ( get_theme_mod( 'oe_custom_code_panel_enable', true ) ) {
-				require_once( $dir .'custom-code.php' );
-			}
 		}
 
 		/**
@@ -184,7 +168,8 @@ if ( ! class_exists( 'OceanWP_Customizer' ) ) :
 		 * @since 1.0.0
 		 */
 		public function custom_customize_enqueue() {
-			wp_enqueue_style( 'font-awesome', OCEANWP_CSS_DIR_URI .'devs/font-awesome.min.css' );
+			wp_enqueue_style( 'font-awesome', OCEANWP_CSS_DIR_URI .'devs/font-awesome.min.css', false, '4.7.0' );
+			wp_enqueue_style( 'simple-line-icons', OCEANWP_INC_DIR_URI .'customizer/assets/css/customizer-simple-line-icons.min.css', false, '2.4.0' );
 			wp_enqueue_style( 'oceanwp-general', OCEANWP_INC_DIR_URI . 'customizer/assets/min/css/general.min.css' );
 			wp_enqueue_script( 'oceanwp-general', OCEANWP_INC_DIR_URI . 'customizer/assets/min/js/general.min.js', array( 'jquery', 'customize-base' ), false, true );
 

@@ -18,30 +18,6 @@
  * @package OceanWP WordPress theme
  */
 
-// Theme info for the welcome page
-function oceanwp_get_theme_info() {
-	return array(
-		'name'        => 'OceanWP',
-		'dir'         => get_template_directory_uri() .'/inc/',
-	);
-}
-
-// Migrate the custom CSS of the Theme Panel into the Additional CSS panel of the customizer
-function oceanwp_custom_css_migrate() {
-	if ( function_exists( 'wp_update_custom_css_post' ) ) {
-		$custom_css = get_theme_mod( 'custom_css' );
-		if ( $custom_css ) {
-			$core_css = wp_get_custom_css(); // Preserve any CSS already added to the core option.
-			$return = wp_update_custom_css_post( $core_css . $custom_css );
-			if ( ! is_wp_error( $return ) ) {
-				// Remove the old theme_mod, so that the CSS is stored in only one place moving forward.
-				remove_theme_mod( 'custom_css' );
-			}
-		}
-	}
-}
-add_action( 'after_setup_theme', 'oceanwp_custom_css_migrate' );
-
 // Core Constants
 define( 'OCEANWP_THEME_DIR', get_template_directory() );
 define( 'OCEANWP_THEME_URI', get_template_directory_uri() );
@@ -78,11 +54,6 @@ class OCEANWP_Theme_Class {
 			add_action( 'after_setup_theme', array( 'OCEANWP_Theme_Class', 'polylang_register_string' ) );
 		}
 
-		// Registers theme_mod strings into WPML
-		if ( class_exists( 'icl_object_id' ) ) {
-			add_action( 'after_setup_theme', array( 'OCEANWP_Theme_Class', 'wpml_register_string' ) );
-		}
-
 		/** Admin only actions **/
 		if ( is_admin() ) {
 
@@ -92,11 +63,20 @@ class OCEANWP_Theme_Class {
 			// Outputs custom CSS for the admin
 			add_action( 'admin_head', array( 'OCEANWP_Theme_Class', 'admin_inline_css' ) );
 
+			// Save custom CSS in the file
+			//add_action( 'customize_save_after', array( 'OCEANWP_Theme_Class', 'save_customizer_css_in_file' ), 9999 );
+
 		/** Non Admin actions **/
 		} else {
 
 			// Load theme CSS
 			add_action( 'wp_enqueue_scripts', array( 'OCEANWP_Theme_Class', 'theme_css' ) );
+
+			// Load his file in last
+			//add_action( 'wp_enqueue_scripts', array( 'OCEANWP_Theme_Class', 'custom_style_css' ), 9999 );
+
+			// Remove Customizer CSS script from Front-end
+			//add_action( 'init', array( 'OCEANWP_Theme_Class', 'remove_customizer_custom_css' ) );
 
 			// Load theme js
 			add_action( 'wp_enqueue_scripts', array( 'OCEANWP_Theme_Class', 'theme_js' ) );
@@ -116,8 +96,11 @@ class OCEANWP_Theme_Class {
 			// Outputs custom CSS to the head
 			add_action( 'wp_head', array( 'OCEANWP_Theme_Class', 'custom_css' ), 9999 );
 
-			// Outputs custom JS to the footer
-			add_action( 'wp_footer', array( 'OCEANWP_Theme_Class', 'custom_js' ), 9999 );
+			// Minify the WP custom CSS because WordPress doesn't do it by default
+			add_filter( 'wp_get_custom_css', array( 'OCEANWP_Theme_Class', 'minify_custom_css' ) );
+
+			// Alter the search posts per page
+			add_action( 'pre_get_posts', array( 'OCEANWP_Theme_Class', 'search_posts_per_page' ) );
 
 			// Alter tagcloud widget to display all tags with 1em font size
 			add_filter( 'widget_tag_cloud_args', array( 'OCEANWP_Theme_Class', 'widget_tag_cloud_args' ) );
@@ -162,6 +145,9 @@ class OCEANWP_Theme_Class {
 		define( 'OCEANWP_INC_DIR_URI', OCEANWP_THEME_URI .'/inc/' );
 
 		// Check if plugins are active
+		define( 'OCEAN_EXTRA_ACTIVE', class_exists( 'Ocean_Extra' ) );
+		define( 'OCEANWP_ELEMENTOR_ACTIVE', class_exists( 'Elementor\Plugin' ) );
+		define( 'OCEANWP_BEAVER_BUILDER_ACTIVE', class_exists( 'FLBuilder' ) );
 		define( 'OCEANWP_WOOCOMMERCE_ACTIVE', class_exists( 'WooCommerce' ) );
 
 	}
@@ -174,14 +160,18 @@ class OCEANWP_Theme_Class {
 	public static function include_functions() {
 		$dir = OCEANWP_INC_DIR;
 		require_once ( $dir .'helpers.php' );
+		require_once ( $dir .'deprecated.php' );
+		require_once ( $dir .'excerpt.php' );
 		require_once ( $dir .'customizer/controls/typography/webfonts.php' );
 		require_once ( $dir .'walker/init.php' );
 		require_once ( $dir .'walker/menu-walker.php' );
-
-		// Welcome page
-		if ( ! defined( 'OCEANWP_DISABLE_THEME_ABOUT_PAGE' ) ) {
-			require_once( $dir .'welcome/welcome.php' );
-		}
+		require_once ( $dir .'third/class-elementor.php' );
+		require_once ( $dir .'third/class-beaver-themer.php' );
+		require_once ( $dir .'third/class-bbpress.php' );
+		require_once ( $dir .'third/class-buddypress.php' );
+		require_once ( $dir .'third/class-lifterlms.php' );
+		require_once ( $dir .'third/class-sensei.php' );
+		require_once ( $dir .'third/class-social-login.php' );
 	}
 
 	/**
@@ -242,9 +232,6 @@ class OCEANWP_Theme_Class {
 		// Customizer class
 		require_once( OCEANWP_INC_DIR .'customizer/customizer.php' );
 
-		// Load the Updater class for oceanwp extensions
-		require_once( OCEANWP_INC_DIR .'updater.php' );
-
 	}
 
 	/**
@@ -269,8 +256,12 @@ class OCEANWP_Theme_Class {
 		register_nav_menus( array(
 			'topbar_menu'     => esc_html__( 'Top Bar', 'oceanwp' ),
 			'main_menu'       => esc_html__( 'Main', 'oceanwp' ),
-			'footer_menu'     => esc_html__( 'Footer', 'oceanwp' )
+			'footer_menu'     => esc_html__( 'Footer', 'oceanwp' ),
+			'mobile_menu'     => esc_html__( 'Mobile (optional)', 'oceanwp' )
 		) );
+
+		// Adding Gutenberg support
+		add_theme_support( 'gutenberg', array( 'wide-images' => true ) );
 
 		// Enable support for Post Formats
 		add_theme_support( 'post-formats', array( 'video', 'gallery', 'audio', 'quote', 'link' ) );
@@ -318,9 +309,12 @@ class OCEANWP_Theme_Class {
 
 		// Declare WooCommerce support.
 		add_theme_support( 'woocommerce' );
+		add_theme_support( 'wc-product-gallery-zoom' );
+		add_theme_support( 'wc-product-gallery-lightbox' );
+		add_theme_support( 'wc-product-gallery-slider' );
 
 		// Add editor style
-		add_editor_style( 'editor-style.css' );
+		add_editor_style( 'assets/css/editor-style.min.css' );
 
 		// Declare support for selective refreshing of widgets.
 		add_theme_support( 'customize-selective-refresh-widgets' );
@@ -360,9 +354,10 @@ class OCEANWP_Theme_Class {
 	 *
 	 * @since 1.0.0
 	 */
-	public static function admin_scripts( $hook ) {
-		if ( $hook == 'nav-menus.php' ) {
-			wp_enqueue_style( 'oceanwp-nav-menus', OCEANWP_INC_DIR_URI .'walker/assets/nav-menus.css' );
+	public static function admin_scripts() {
+		global $pagenow;
+		if ( 'nav-menus.php' == $pagenow ) {
+			wp_enqueue_style( 'oceanwp-menus', OCEANWP_INC_DIR_URI .'walker/assets/menus.css' );
 		}
 	}
 
@@ -382,18 +377,40 @@ class OCEANWP_Theme_Class {
 		wp_deregister_style( 'fontawesome' );
 
 		// Load font awesome style
-		wp_enqueue_style( 'font-awesome', $dir .'devs/font-awesome.min.css', false, '4.7.0' );
+		wp_enqueue_style( 'font-awesome', $dir .'third/font-awesome.min.css', false, '4.7.0' );
 
 		// Register simple line icons style
-		wp_enqueue_style( 'simple-line-icons', $dir .'devs/simple-line-icons.min.css', false, '2.2.2' );
+		wp_enqueue_style( 'simple-line-icons', $dir .'third/simple-line-icons.min.css', false, '2.4.0' );
 
-		// Lightbox style
-		if ( get_theme_mod( 'ocean_add_lightbox', true ) ) {
-			wp_enqueue_style( 'chocolat', $dir .'oceanwp-lightbox.min.css', false, $theme_version );
-		}
+		// Register the lightbox style
+		wp_enqueue_style( 'magnific-popup', $dir .'third/magnific-popup.min.css', false, '1.0.0' );
 
 		// Main Style.css File
-		wp_enqueue_style( 'oceanwp-style', get_stylesheet_uri(), false, $theme_version );
+		wp_enqueue_style( 'oceanwp-style', $dir .'style.min.css', false, $theme_version );
+
+		// Register hamburgers buttons to easily use them
+		wp_register_style( 'oceanwp-hamburgers', $dir .'third/hamburgers/hamburgers.min.css', false, $theme_version );
+
+		// Register hamburgers buttons styles
+		$hamburgers = oceanwp_hamburgers_styles();
+		foreach ( $hamburgers as $class => $name ) {
+			wp_register_style( 'oceanwp-'. $class .'', $dir .'third/hamburgers/types/'. $class .'.css', false, $theme_version );
+		}
+
+		// Get mobile menu icon style
+		$mobileMenu = get_theme_mod( 'ocean_mobile_menu_open_hamburger', 'default' );
+
+		// Enqueue mobile menu icon style
+		if ( ! empty( $mobileMenu ) && 'default' != $mobileMenu ) {
+			wp_enqueue_style( 'oceanwp-hamburgers' );
+			wp_enqueue_style( 'oceanwp-'. $mobileMenu .'' );
+		}
+
+		// If Vertical header style
+		if ( 'vertical' == oceanwp_header_style() ) {
+			wp_enqueue_style( 'oceanwp-hamburgers' );
+			wp_enqueue_style( 'oceanwp-spin' );
+		}
 
 	}
 
@@ -411,29 +428,40 @@ class OCEANWP_Theme_Class {
 		$theme_version = OCEANWP_THEME_VERSION;
 
 		// Get localized array
-		$localize_array = OCEANWP_Theme_Class::localize_array();
+		$localize_array = self::localize_array();
 
 		// Comment reply
 		if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 			wp_enqueue_script( 'comment-reply' );
 		}
 
+		// Add images loaded
+		wp_enqueue_script( 'imagesloaded' );
+
 		// Register nicescroll script to use it in some extensions
-		wp_register_script( 'nicescroll', $dir .'dynamic/nicescroll.min.js', array( 'jquery' ), $theme_version, true );
+		wp_register_script( 'nicescroll', $dir .'third/nicescroll.min.js', array( 'jquery' ), $theme_version, true );
+
+		// Enqueue nicescroll script if vertical header style
+		if ( 'vertical' == oceanwp_header_style() ) {
+			wp_enqueue_script( 'nicescroll' );
+		}
+
+		// Register Infinite Scroll script
+		wp_register_script( 'infinitescroll', $dir .'third/infinitescroll.min.js', array( 'jquery' ), $theme_version, true );
 
 		// WooCommerce scripts
 		if ( OCEANWP_WOOCOMMERCE_ACTIVE ) {
-			wp_enqueue_script( 'oceanwp-woocommerce', $dir .'dynamic/woo-scripts.min.js', array( 'jquery' ), $theme_version, true );
+			wp_enqueue_script( 'oceanwp-woocommerce', $dir .'third/woo/woo-scripts.min.js', array( 'jquery' ), $theme_version, true );
 		}
 
-		// Lightbox scripts
-		if ( get_theme_mod( 'ocean_add_lightbox', true ) ) {
-			wp_enqueue_script( 'chocolat', $dir .'dynamic/chocolat.min.js', array( 'jquery' ), $theme_version, true );
-			wp_enqueue_script( 'oceanwp-lightbox', $dir .'dynamic/lightbox.min.js', array( 'jquery' ), $theme_version, true );
-		}
+		// Load the lightbox scripts
+		wp_enqueue_script( 'magnific-popup', $dir .'third/magnific-popup.min.js', array( 'jquery' ), $theme_version, true );
+		wp_enqueue_script( 'oceanwp-lightbox', $dir .'third/lightbox.min.js', array( 'jquery' ), $theme_version, true );
 
 		// Load minified js
 		wp_enqueue_script( 'oceanwp-main', $dir .'main.min.js', array( 'jquery' ), $theme_version, true );
+		
+		// Localize array
 		wp_localize_script( 'oceanwp-main', 'oceanwpLocalize', $localize_array );
 
 	}
@@ -446,14 +474,21 @@ class OCEANWP_Theme_Class {
 	public static function localize_array() {
 
 		// Create array
+		$sidr_side 		= get_theme_mod( 'ocean_mobile_menu_sidr_direction', 'left' );
+		$sidr_side 		= $sidr_side ? $sidr_side : 'left';
+		$sidr_target 	= get_theme_mod( 'ocean_mobile_menu_sidr_dropdown_target', 'icon' );
+		$sidr_target 	= $sidr_target ? $sidr_target : 'icon';
+		$vh_target 		= get_theme_mod( 'ocean_vertical_header_dropdown_target', 'icon' );
+		$vh_target 		= $vh_target ? $vh_target : 'icon';
 		$array = array(
 			'isRTL'                 => is_rtl(),
 			'menuSearchStyle'       => oceanwp_menu_search_style(),
 			'sidrSource'       		=> oceanwp_sidr_menu_source(),
-			'sidrDisplace'       	=> get_theme_mod( 'ocean_mobile_menu_sidr_displace', true ) ?  true : false,
-			'sidrSide'       		=> get_theme_mod( 'ocean_mobile_menu_sidr_direction', 'left' ),
-			'sidrDropdownTarget'    => 'arrow',
-			'customSelects'         => '.woocommerce-ordering .orderby, .cart-collaterals .cart_totals table select, #dropdown_product_cat, .widget_categories select, .widget_archive select, .single-product .variations_form .variations select',
+			'sidrDisplace'       	=> get_theme_mod( 'ocean_mobile_menu_sidr_displace', true ) ? true : false,
+			'sidrSide'       		=> $sidr_side,
+			'sidrDropdownTarget'    => $sidr_target,
+			'verticalHeaderTarget'  => $vh_target,
+			'customSelects'         => '.woocommerce-ordering .orderby, #dropdown_product_cat, .widget_categories select, .widget_archive select, .single-product .variations_form .variations select',
 		);
 
 		// WooCart
@@ -481,7 +516,7 @@ class OCEANWP_Theme_Class {
 	 * @since 1.0.0
 	 */
 	public static function html5_shiv() {
-		wp_register_script( 'html5shiv', OCEANWP_JS_DIR_URI . 'html5.js', array(), OCEANWP_THEME_VERSION, false );
+		wp_register_script( 'html5shiv', OCEANWP_JS_DIR_URI . '/third/html5.min.js', array(), OCEANWP_THEME_VERSION, false );
 		wp_enqueue_script( 'html5shiv' );
 		wp_script_add_data( 'html5shiv', 'conditional', 'lt IE 9' );
 	}
@@ -493,15 +528,26 @@ class OCEANWP_Theme_Class {
 	 */
 	public static function register_sidebars() {
 
-		// Sidebar
+		// Right Sidebar
 		register_sidebar( array(
-			'name'			=> esc_html__( 'Sidebar', 'oceanwp' ),
+			'name'			=> esc_html__( 'Right Sidebar', 'oceanwp' ),
 			'id'			=> 'sidebar',
-			'description'	=> esc_html__( 'Widgets in this area are used in the sidebar region.', 'oceanwp' ),
-			'before_widget'	=> '<div class="sidebar-box %2$s clr">',
+			'description'	=> esc_html__( 'Widgets in this area are used in the right sidebar region.', 'oceanwp' ),
+			'before_widget'	=> '<div id="%1$s" class="sidebar-box %2$s clr">',
 			'after_widget'	=> '</div>',
-			'before_title'	=> '<h5 class="widget-title">',
-			'after_title'	=> '</h5>',
+			'before_title'	=> '<h4 class="widget-title">',
+			'after_title'	=> '</h4>',
+		) );
+
+		// Left Sidebar
+		register_sidebar( array(
+			'name'			=> esc_html__( 'Left Sidebar', 'oceanwp' ),
+			'id'			=> 'sidebar-2',
+			'description'	=> esc_html__( 'Widgets in this area are used in the left sidebar region.', 'oceanwp' ),
+			'before_widget'	=> '<div id="%1$s" class="sidebar-box %2$s clr">',
+			'after_widget'	=> '</div>',
+			'before_title'	=> '<h4 class="widget-title">',
+			'after_title'	=> '</h4>',
 		) );
 
 		// Search Results Sidebar
@@ -510,10 +556,10 @@ class OCEANWP_Theme_Class {
 				'name'			=> esc_html__( 'Search Results Sidebar', 'oceanwp' ),
 				'id'			=> 'search_sidebar',
 				'description'	=> esc_html__( 'Widgets in this area are used in the search result page.', 'oceanwp' ),
-				'before_widget'	=> '<div class="sidebar-box %2$s clr">',
+				'before_widget'	=> '<div id="%1$s" class="sidebar-box %2$s clr">',
 				'after_widget'	=> '</div>',
-				'before_title'	=> '<h5 class="widget-title">',
-				'after_title'	=> '</h5>',
+				'before_title'	=> '<h4 class="widget-title">',
+				'after_title'	=> '</h4>',
 			) );
 		}
 
@@ -522,10 +568,10 @@ class OCEANWP_Theme_Class {
 			'name'			=> esc_html__( 'Footer 1', 'oceanwp' ),
 			'id'			=> 'footer-one',
 			'description'	=> esc_html__( 'Widgets in this area are used in the first footer region.', 'oceanwp' ),
-			'before_widget'	=> '<div class="footer-widget %2$s clr">',
+			'before_widget'	=> '<div id="%1$s" class="footer-widget %2$s clr">',
 			'after_widget'	=> '</div>',
-			'before_title'	=> '<h6 class="widget-title">',
-			'after_title'	=> '</h6>',
+			'before_title'	=> '<h4 class="widget-title">',
+			'after_title'	=> '</h4>',
 		) );
 
 		// Footer 2
@@ -533,10 +579,10 @@ class OCEANWP_Theme_Class {
 			'name'			=> esc_html__( 'Footer 2', 'oceanwp' ),
 			'id'			=> 'footer-two',
 			'description'	=> esc_html__( 'Widgets in this area are used in the second footer region.', 'oceanwp' ),
-			'before_widget'	=> '<div class="footer-widget %2$s clr">',
+			'before_widget'	=> '<div id="%1$s" class="footer-widget %2$s clr">',
 			'after_widget'	=> '</div>',
-			'before_title'	=> '<h6 class="widget-title">',
-			'after_title'	=> '</h6>',
+			'before_title'	=> '<h4 class="widget-title">',
+			'after_title'	=> '</h4>',
 		) );
 
 		// Footer 3
@@ -544,10 +590,10 @@ class OCEANWP_Theme_Class {
 			'name'			=> esc_html__( 'Footer 3', 'oceanwp' ),
 			'id'			=> 'footer-three',
 			'description'	=> esc_html__( 'Widgets in this area are used in the third footer region.', 'oceanwp' ),
-			'before_widget'	=> '<div class="footer-widget %2$s clr">',
+			'before_widget'	=> '<div id="%1$s" class="footer-widget %2$s clr">',
 			'after_widget'	=> '</div>',
-			'before_title'	=> '<h6 class="widget-title">',
-			'after_title'	=> '</h6>',
+			'before_title'	=> '<h4 class="widget-title">',
+			'after_title'	=> '</h4>',
 		) );
 
 		// Footer 4
@@ -555,10 +601,10 @@ class OCEANWP_Theme_Class {
 			'name'			=> esc_html__( 'Footer 4', 'oceanwp' ),
 			'id'			=> 'footer-four',
 			'description'	=> esc_html__( 'Widgets in this area are used in the fourth footer region.', 'oceanwp' ),
-			'before_widget'	=> '<div class="footer-widget %2$s clr">',
+			'before_widget'	=> '<div id="%1$s" class="footer-widget %2$s clr">',
 			'after_widget'	=> '</div>',
-			'before_title'	=> '<h6 class="widget-title">',
-			'after_title'	=> '</h6>',
+			'before_title'	=> '<h4 class="widget-title">',
+			'after_title'	=> '</h4>',
 		) );
 
 	}
@@ -579,31 +625,31 @@ class OCEANWP_Theme_Class {
 	}
 
 	/**
-	 * Registers theme_mod strings into WPML.
-	 *
-	 * @since 1.1.4
-	 */
-	public static function wpml_register_string() {
-
-		if ( function_exists( 'icl_register_string' ) && $strings = oceanwp_register_tm_strings() ) {
-			foreach( $strings as $string => $default ) {
-				icl_register_string( 'Theme Mod', $string, get_theme_mod( $string, $default ) );
-			}
-		}
-
-	}
-
-	/**
 	 * All theme functions hook into the oceanwp_head_css filter for this function.
 	 *
 	 * @since 1.0.0
 	 */
 	public static function custom_css( $output = NULL ) {
+		/*global $wp_customize;
+		$upload_dir = wp_upload_dir();
+
+		// Render CSS in the head
+		if ( isset( $wp_customize ) || ! file_exists( $upload_dir['basedir'] .'/oceanwp/custom-style.css' ) ) { 
+		    
+		    // Add filter for adding custom css via other functions
+			$output = apply_filters( 'ocean_head_css', $output );
+
+			 // Minify and output CSS in the wp_head
+			if ( ! empty( $output ) ) {
+				echo "<!-- OceanWP CSS -->\n<style type=\"text/css\">\n" . wp_strip_all_tags( oceanwp_minify_css( $output ) ) . "\n</style>";
+			}
+		}*/
+
 
 		// Add filter for adding custom css via other functions
 		$output = apply_filters( 'ocean_head_css', $output );
 
-		// Minify and output CSS in the wp_head
+		 // Minify and output CSS in the wp_head
 		if ( ! empty( $output ) ) {
 			echo "<!-- OceanWP CSS -->\n<style type=\"text/css\">\n" . wp_strip_all_tags( oceanwp_minify_css( $output ) ) . "\n</style>";
 		}
@@ -611,28 +657,87 @@ class OCEANWP_Theme_Class {
 	}
 
 	/**
-	 * All theme functions hook into the oceanwp_footer_js filter for this function.
+	 * Minify the WP custom CSS because WordPress doesn't do it by default.
 	 *
-	 * @since 1.1.0
+	 * @since 1.1.9
 	 */
-	public static function custom_js( $output = NULL ) {
+	public static function minify_custom_css( $css ) {
 
-		// Add filter for adding custom js via other functions
-		$output = apply_filters( 'ocean_footer_js', $output );
+		return oceanwp_minify_css( $css );
 
-		// Minify and output JS in the wp_footer
-		if ( ! empty( $output ) ) { ?>
+	}
 
-			<script type="text/javascript">
+	/**
+	 * Save Customizer CSS in a file
+	 *
+	 * @since 1.4.9
+	 */
+	public static function save_customizer_css_in_file() {
 
-				/* OceanWP JS */
-				<?php echo oceanwp_minify_js( $output ); ?>
+		// Get all the customier css
+	    $output = apply_filters( 'ocean_head_css', $output );
+	    $output .= apply_filters( 'ocean_head_css_typo', $CSS );
 
-			</script>
+	    // Get Custom Panel CSS
+	    $output_custom_css .= wp_get_custom_css();
 
-		<?php
+	    // Minified the Custom CSS
+		$output .= oceanwp_minify_css( $output_custom_css );
+			
+		// We will probably need to load this file
+		require_once( ABSPATH . 'wp-admin' . DIRECTORY_SEPARATOR . 'includes' . DIRECTORY_SEPARATOR . 'file.php' );
+		
+		global $wp_filesystem;
+		$upload_dir = wp_upload_dir(); // Grab uploads folder array
+		$dir = trailingslashit( $upload_dir['basedir'] ) . 'oceanwp'. DIRECTORY_SEPARATOR; // Set storage directory path
+
+		WP_Filesystem(); // Initial WP file system
+		$wp_filesystem->mkdir( $dir ); // Make a new folder 'oceanwp' for storing our file if not created already.
+		$wp_filesystem->put_contents( $dir . 'custom-style.css', $output, 0644 ); // Store in the file.
+
+	}
+
+	/**
+	 * Include Custom CSS file if present.
+	 *
+	 * @since 1.4.9
+	 */
+	public static function custom_style_css() {
+		global $wp_customize;
+		$upload_dir = wp_upload_dir();
+
+		// Get all the customier css
+	    $output = apply_filters( 'ocean_head_css', $output );
+
+	    // Get Custom Panel CSS
+	    $output_custom_css .= wp_get_custom_css();
+
+	    // Minified the Custom CSS
+		$output .= oceanwp_minify_css( $output_custom_css );
+
+		// Render CSS from the custom file
+		if ( ! isset( $wp_customize ) && file_exists( $upload_dir['basedir'] .'/oceanwp/custom-style.css' ) && ! empty( $output ) ) { 
+		    wp_enqueue_style( 'oceanwp-custom',  get_site_url() .'/wp-content/uploads/oceanwp/custom-style.css', false, null );	    			
+		}		
+	}
+
+	/**
+	 * Remove Customizer style script from front-end
+	 *
+	 * @since 1.4.9
+	 */
+	public static function remove_customizer_custom_css() {
+		global $wp_customize;
+		$upload_dir = wp_upload_dir();
+
+		// Disable Custom CSS in the frontend head
+		remove_action( 'wp_head', 'wp_custom_css_cb', 11 );
+		remove_action( 'wp_head', 'wp_custom_css_cb', 101 );
+
+		// If custom CSS file exists and NOT in customizer screen
+		if ( isset( $wp_customize ) ) {
+			add_action( 'wp_footer', 'wp_custom_css_cb', 9999 );
 		}
-
 	}
 
 	/**
@@ -642,6 +747,21 @@ class OCEANWP_Theme_Class {
 	 */
 	public static function admin_inline_css() {
 		echo '<style>div#setting-error-tgmpa{display:block;}</style>';
+	}
+
+
+	/**
+	 * Alter the search posts per page
+	 *
+	 * @since 1.3.7
+	 */
+	public static function search_posts_per_page( $query ) {
+		$posts_per_page = get_theme_mod( 'ocean_search_post_per_page', '8' );
+		$posts_per_page = $posts_per_page ? $posts_per_page : '8';
+
+		if ( $query->is_main_query() && is_search() ) {
+			$query->set( 'posts_per_page', $posts_per_page );
+		}
 	}
 
 	/**
@@ -697,11 +817,11 @@ class OCEANWP_Theme_Class {
 	        '#https://youtu\.be/.*#i',
 	        '#https?://(.+\.)?vimeo\.com/.*#i',
 	        '#https?://(www\.)?dailymotion\.com/.*#i',
-	        '#https?://dai.ly/*#i',
+	        '#https?://dai\.ly/*#i',
 	        '#https?://(www\.)?hulu\.com/watch/.*#i',
-	        '#https?://wordpress.tv/.*#i',
+	        '#https?://wordpress\.tv/.*#i',
 	        '#https?://(www\.)?funnyordie\.com/videos/.*#i',
-	        '#https?://vine.co/v/.*#i',
+	        '#https?://vine\.co/v/.*#i',
 	        '#https?://(www\.)?collegehumor\.com/video/.*#i',
 	        '#https?://(www\.|embed\.)?ted\.com/talks/.*#i'
 		) );
@@ -761,9 +881,9 @@ class OCEANWP_Theme_Class {
 	public static function the_author_posts_link( $link ) {
 
 		// Add schema markup
-		$schema = 'itemprop="author" itemscope="itemscope" itemtype="http://schema.org/Person"';
+		$schema = oceanwp_get_schema_markup( 'author_link' );
 		if ( $schema ) {
-			$link = str_replace( 'rel="author"', 'rel="author"'. $schema, $link );
+			$link = str_replace( 'rel="author"', 'rel="author" '. $schema, $link );
 		}
 
 		// Return link

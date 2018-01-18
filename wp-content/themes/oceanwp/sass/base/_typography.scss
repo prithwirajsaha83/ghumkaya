@@ -19,11 +19,7 @@ a.light {
 
 a, a:hover, a:focus {
 	text-decoration: none;
-    transition: all .3s ease;
-    -webkit-transition: all .3s ease;
-    -moz-transition: all .3s ease;
-    -o-transition: all .3s ease;
-    -ms-transition: all .3s ease;
+    @include transition( all .3s ease );
 }
 
 /**
@@ -36,7 +32,7 @@ h4,
 h5,
 h6 {
 	font-weight: $heading-font-weight;
-	margin: 10px 0;
+	margin: 0 0 20px;
 	color: $heading-font-color;
 	line-height: 1.4;
 }
@@ -219,9 +215,7 @@ hr {
 	* {
 		color: #000 !important;
 		background: transparent !important;
-		-webkit-box-shadow: none !important;
-		-moz-box-shadow: none !important;
-		box-shadow: none !important;
+		@include box-shadow( none !important );
 		text-shadow: none !important;
 	}
 
@@ -279,4 +273,15 @@ hr {
 	h3 {
 		page-break-after: avoid;
 	}
+}
+
+/*------------------------------------*
+	Phone Landscape
+*------------------------------------*/
+@media only screen and (max-width: 480px) {
+
+	blockquote {
+		margin: 20px 0;
+	}
+
 }

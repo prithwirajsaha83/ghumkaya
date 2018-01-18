@@ -10,6 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Only display for standard posts
+if ( 'post' != get_post_type() ) {
+	return;
+}
+
 // Text
 $text = esc_html__( 'You Might Also Like', 'oceanwp' );
 
@@ -17,20 +22,23 @@ $text = esc_html__( 'You Might Also Like', 'oceanwp' );
 $text = apply_filters( 'ocean_related_posts_title', $text );
 
 // Number of columns for entries
-$oceanwp_columns = apply_filters( 'ocean_related_blog_posts_columns', get_theme_mod( 'ocean_blog_related_columns', '3' ) );
+$oceanwp_columns = apply_filters( 'ocean_related_blog_posts_columns', absint( get_theme_mod( 'ocean_blog_related_columns', '3' ) ) );
 
-// Create an array of current category ID's
-$cats     = wp_get_post_terms( get_the_ID(), 'category' );
-$cats_ids = array();
-foreach( $cats as $oceanwp_related_cat ) {
-	$cats_ids[] = $oceanwp_related_cat->term_id;
+// Term
+$term_tax = get_theme_mod( 'ocean_blog_related_taxonomy', 'category' );
+$term_tax = $term_tax ? $term_tax : 'category';
+
+// Create an array of current term ID's
+$terms     = wp_get_post_terms( get_the_ID(), $term_tax );
+$terms_ids = array();
+foreach( $terms as $term ) {
+	$terms_ids[] = $term->term_id;
 }
 
 // Query args
 $args = array(
-	'posts_per_page' => get_theme_mod( 'ocean_blog_related_count', '3' ),
+	'posts_per_page' => apply_filters( 'ocean_related_blog_posts_count', absint( get_theme_mod( 'ocean_blog_related_count', '3' ) ) ),
 	'orderby'        => 'rand',
-	'category__in'   => $cats_ids,
 	'post__not_in'   => array( get_the_ID() ),
 	'no_found_rows'  => true,
 	'tax_query'      => array (
@@ -43,6 +51,18 @@ $args = array(
 		),
 	),
 );
+
+// If category
+if ( 'category' == $term_tax ) {
+	$args['category__in'] = $terms_ids;
+}
+
+// If tags
+if ( 'post_tag' == $term_tax ) {
+	$args['tag__in'] = $terms_ids;
+}
+
+// Args
 $args = apply_filters( 'ocean_blog_post_related_query_args', $args );
 
 // Related query arguments
@@ -57,11 +77,13 @@ if ( $oceanwp_related_query->have_posts() ) :
 		$classes .= ' container';
 	} ?>
 
-	<div id="related-posts" class="<?php echo esc_attr( $classes ); ?>">
+	<?php do_action( 'ocean_before_single_post_related_posts' ); ?>
 
-		<h2 class="theme-heading related-posts-title">
+	<section id="related-posts" class="<?php echo esc_attr( $classes ); ?>">
+
+		<h3 class="theme-heading related-posts-title">
 			<span class="text"><?php echo esc_html( $text ); ?></span>
-		</h2>
+		</h3>
 
 		<div class="oceanwp-row clr">
 
@@ -80,15 +102,7 @@ if ( $oceanwp_related_query->have_posts() ) :
 				// Add classes
 				$classes	= array( 'related-post', 'clr', 'col' );
 				$classes[]	= oceanwp_grid_class( $oceanwp_columns );
-				$classes[]	= 'col-'. $oceanwp_count;
-
-				// Images size
-				if ( 'full-width' == oceanwp_post_layout()
-					|| 'full-screen' == oceanwp_post_layout() ) {
-					$size = 'medium_large';
-				} else {
-					$size = 'medium';
-				} ?>
+				$classes[]	= 'col-'. $oceanwp_count; ?>
 
 				<article <?php post_class( $classes ); ?>>
 
@@ -115,21 +129,59 @@ if ( $oceanwp_related_query->have_posts() ) :
 						<figure class="related-post-media clr">
 
 							<a href="<?php the_permalink(); ?>" class="related-thumb">
+
 								<?php
-								// Display post thumbnail
-								the_post_thumbnail( $size, array(
-									'alt'		=> get_the_title(),
-									'itemprop' 	=> 'image',
-								) ); ?>
+								// Image width
+								$img_width  = apply_filters( 'ocean_related_blog_posts_img_width', absint( get_theme_mod( 'ocean_blog_related_img_width' ) ) );
+								$img_height = apply_filters( 'ocean_related_blog_posts_img_height', absint( get_theme_mod( 'ocean_blog_related_img_height' ) ) );
+
+			                	// Images attr
+								$img_id 	= get_post_thumbnail_id( get_the_ID(), 'full' );
+								$img_url 	= wp_get_attachment_image_src( $img_id, 'full', true );
+								if ( OCEAN_EXTRA_ACTIVE
+									&& function_exists( 'ocean_extra_image_attributes' ) ) {
+									$img_atts 	= ocean_extra_image_attributes( $img_url[1], $img_url[2], $img_width, $img_height );
+								}
+
+								// If Ocean Extra is active and has a custom size
+								if ( OCEAN_EXTRA_ACTIVE
+									&& function_exists( 'ocean_extra_resize' )
+									&& ! empty( $img_atts ) ) { ?>
+
+									<img src="<?php echo ocean_extra_resize( $img_url[0], $img_atts[ 'width' ], $img_atts[ 'height' ], $img_atts[ 'crop' ], true, $img_atts[ 'upscale' ] ); ?>" alt="<?php the_title_attribute(); ?>" width="<?php echo esc_attr( $img_width ); ?>" height="<?php echo esc_attr( $img_height ); ?>"<?php oceanwp_schema_markup( 'image' ); ?> />
+
+								<?php
+								} else {
+
+									// Images size
+									if ( 'full-width' == oceanwp_post_layout()
+										|| 'full-screen' == oceanwp_post_layout() ) {
+										$size = 'medium_large';
+									} else {
+										$size = 'medium';
+									}
+
+									// Image args
+									$img_args = array(
+									    'alt' => get_the_title(),
+									);
+									if ( oceanwp_get_schema_markup( 'image' ) ) {
+										$img_args['itemprop'] = 'image';
+									}
+
+									// Display post thumbnail
+									the_post_thumbnail( $size, $img_args );
+
+								} ?>
 							</a>
 
 						</figure>
 
 					<?php endif; ?>
 
-					<h2 class="related-post-title">
-						<a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>" rel="bookmark"><?php the_title(); ?></a>
-					</h2><!-- .related-post-title -->
+					<h3 class="related-post-title">
+						<a href="<?php the_permalink(); ?>" title="<?php the_title_attribute(); ?>" rel="bookmark"><?php the_title(); ?></a>
+					</h3><!-- .related-post-title -->
 									
 					<time class="published" datetime="<?php echo esc_html( get_the_date( 'c' ) ); ?>"><i class="icon-clock"></i><?php echo esc_html( get_the_date() ); ?></time>
 
@@ -141,7 +193,9 @@ if ( $oceanwp_related_query->have_posts() ) :
 
 		</div><!-- .oceanwp-row -->
 
-	</div><!-- .related-posts -->
+	</section><!-- .related-posts -->
+
+	<?php do_action( 'ocean_after_single_post_related_posts' ); ?>
 
 <?php endif; ?>
 

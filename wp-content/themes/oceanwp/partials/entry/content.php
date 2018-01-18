@@ -8,21 +8,23 @@
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
-}
+} ?>
 
-// Excerpt length
-$excerpt = get_theme_mod( 'ocean_blog_entry_excerpt_length', '30' );
-$excerpt = $excerpt ? $excerpt : '30'; ?>
+<?php do_action( 'ocean_before_blog_entry_content' ); ?>
 
-<div class="blog-entry-summary clr">
+<div class="blog-entry-summary clr"<?php oceanwp_schema_markup( 'entry_content' ); ?>>
 
     <?php
-    // Display excerpt if auto excerpts are enabled in the admin
-    if ( get_theme_mod( 'ocean_blog_excerpt', true ) ) :
+    // Display excerpt
+    if ( '500' != get_theme_mod( 'ocean_blog_entry_excerpt_length', '30' ) ) : ?>
 
-        // Display custom excerpt
-        oceanwp_excerpt( esc_attr( $excerpt ) );
+        <p>
+            <?php
+            // Display custom excerpt
+            oceanwp_excerpt( absint( get_theme_mod( 'ocean_blog_entry_excerpt_length', '30' ) ) ); ?>
+        </p>
 
+    <?php
     // If excerpts are disabled, display full content
     else :
 
@@ -31,3 +33,5 @@ $excerpt = $excerpt ? $excerpt : '30'; ?>
     endif; ?>
 
 </div><!-- .blog-entry-summary -->
+
+<?php do_action( 'ocean_after_blog_entry_content' ); ?>
