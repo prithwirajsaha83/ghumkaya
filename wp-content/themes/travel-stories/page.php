@@ -16,17 +16,12 @@ if ( have_posts() ) {
 			<?php if ( has_post_thumbnail() ) {
 				the_post_thumbnail( 'featured_image' );
 			} ?>
-			<p class="travel-stories-single-category">
-				<?php the_category(); ?>
-
 			<div class="travel-stories-single-post-name">
 				<a><?php the_title(); ?></a>
 			</div>
-			<?php $date = sprintf( '<a href="%1$s" title="%2$s" rel="bookmark"><time class="entry-date" datetime="%3$s">%4$s</time></a>', esc_url( get_permalink() ), esc_attr( sprintf( 'Permalink to %s', the_title_attribute( 'echo=0' ) ) ), esc_attr( get_the_date( 'c' ) ), esc_html( get_the_date( 'F j, Y' ) ) ); ?>
+			<?php $date = sprintf( '<a href="%1$s" title="%2$s" rel="bookmark"><time class="entry-date" datetime="%3$s">%4$s</time></a>', esc_url( get_month_link( get_the_time( 'Y' ), get_the_time( 'm' ) ) ), esc_attr( the_title_attribute( 'echo=0' ) ), esc_attr( get_the_date( 'c' ) ), esc_html( get_the_date() ) ); ?>
 			<p class="travel-stories-single-post-date"><?php echo $date; ?></p>
-
 			<p class="travel-stories-single-post-author"> <?php the_author_posts_link(); ?></p>
-
 			<div class="clear"></div>
 		</div>
 		<div class="travel-stories-single-content">
@@ -35,58 +30,47 @@ if ( have_posts() ) {
 				<div class="travel-stories-page-links">
 					<?php wp_link_pages(); ?>
 				</div>
-				<?php if ( has_category() ) : ?>
-					<div class="travel-stories-category-box">
-						<p> <?php echo __( 'Categories:', 'travel-stories' ) . '&nbsp;';
-							the_category( ', ' ); ?></p>
-					</div>
-				<?php endif;
-				if ( has_tag() ) : ?>
-					<div class="travel-stories-tag-box">
-						<p> <?php the_tags( __( 'Tags:', 'travel-stories' ) . '&nbsp;', ', ', '.' ) ?></p>
-					</div>
-				<?php endif; ?>
 				<div class="clear"></div>
 			</div>
 		</div>
 	</article>
-<?php } 
+<?php }
 wp_reset_postdata(); ?>
 	<div class="travel-stories-single-related-posts-title">
 		<p> <?php __( 'Related posts', 'travel-stories' ); ?></p>
-
 		<div class="travel-stories-single-related-posts-title-line"></div>
 	</div>
 	<div class="travel-stories-single-posts">
-		<?php	$travel_stories_posts = new WP_Query( array(
-			'posts_per_page'		=> 3,
-			'post_type'				=> 'post',
-			'ignore_sticky_posts'	=> 1
-			) );		
-		if( $travel_stories_posts->have_posts() ) {
-			while ( $travel_stories_posts->have_posts() ) { 
+		<?php $travel_stories_posts = new WP_Query( array(
+			'posts_per_page'      => 3,
+			'post_type'           => 'post',
+			'ignore_sticky_posts' => 1,
+		) );
+		if ( $travel_stories_posts->have_posts() ) {
+			while ( $travel_stories_posts->have_posts() ) {
 				$travel_stories_posts->the_post(); ?>
 				<article class="travel-stories-post">
 					<div class="travel-stories-post-blackout"></div>
 					<h1>
-						<a class="travel-stories-post-name" href="<?php the_permalink(); ?>" rel="bookmark" title="<?php _e( 'Permanent Link to ', 'travel-stories' ); the_title_attribute(); ?>">
+						<a class="travel-stories-post-name" href="<?php the_permalink(); ?>" rel="bookmark" title="<?php _e( 'Permanent Link to ', 'travel-stories' );
+						the_title_attribute(); ?>">
 							<?php the_title(); ?>
-						</a></h1>
-
+						</a>
+					</h1>
 					<div class="travel-stories-post-line"></div>
-					<p class="travel-stories-post-author"> <?php the_author_posts_link(); ?></p>
-
-					<p class="travel-stories-category"> <?php the_category( ',' ) ?></p>
+					<p class="travel-stories-post-author"><?php the_author_posts_link(); ?></p>
+					<p class="travel-stories-category"><?php the_category( ',' ) ?></p>
 					<?php if ( has_post_thumbnail() ) {
 						the_post_thumbnail( 'travel_stories_post' );
 					} ?>
 					<div class="clear"></div>
 				</article><!-- .post -->
 			<?php }
-		} ?>
+		}
+		wp_reset_postdata(); ?>
 	</div><!-- travel-stories-single-posts -->
 	<div class="clear"></div>
 	<div class="travel-stories-single-comment">
 		<?php comments_template(); ?>
 	</div>
-<?php get_footer(); ?>
+<?php get_footer();
