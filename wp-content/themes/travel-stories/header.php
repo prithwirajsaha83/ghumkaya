@@ -55,17 +55,12 @@
 										$image_attributes = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'travel_stories_slider' ); ?>
 										<img src="<?php echo $image_attributes[0]; ?>" u="image" />
 									<?php } ?>
-									<div class="travel-stories-blackout"></div>
-									<div class="travel-stories-slider-post-details">
+									<div class="travel-stories-blackout"></div>									
 										<h6>
 											<a class="travel-stories-header-text" href="<?php the_permalink(); ?>" rel="bookmark" title="<?php _e( 'Permanent Link to ', 'travel-stories' ); the_title_attribute(); ?>">
 												<?php the_title(); ?>
 											</a>
 										</h6>
-
-										<div class="travel-stories-header-line">
-											<hr>
-										</div>
 										<div id="travel_stories_header_block">
 											<div class="travel-stories-header-block_1">
 												<p class="travel-stories-header-text-block-1-1"><?php _e( 'POSTED BY', 'travel-stories' ); ?></p>
@@ -80,7 +75,7 @@
 											<a class="travel-stories-more-slider" href="<?php echo get_permalink(); ?>"><?php _e( 'Explore', 'travel-stories' ); ?></a>
 										</div>
 									</div>
-								</div>
+								
 							<?php } ?>
 							<span u="arrowleft" class="travel-stories-header-block-4-left jssora03l"></span>
 							<span u="arrowright" class="travel-stories-header-block-4-right jssora03r"></span>
