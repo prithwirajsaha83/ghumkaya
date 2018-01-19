@@ -79,7 +79,7 @@
 
 											<p class="travel-stories-header-text-block-2-2"><?php echo $date; ?></p>
 										</div>
-										<a class="travel-stories-more-slider" href="<?php echo get_permalink(); ?>"><?php _e( 'Learn More', 'travel-stories' ); ?></a>
+										<a class="travel-stories-more-slider" href="<?php echo get_permalink(); ?>"><?php _e( 'Read >>', 'travel-stories' ); ?></a>
 									</div>
 								</div>
 							<?php } ?>
