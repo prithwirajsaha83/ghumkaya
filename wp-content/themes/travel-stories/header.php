@@ -46,10 +46,11 @@
 						</div>
 					</div>
 					<div class="slider" id="slider">
-						<div u="slides" id="slides">
+						
 							<?php while( $posts_in_slider->have_posts() ) {
 								$posts_in_slider->the_post();
 								$date = sprintf( '<a href="%1$s" title="%2$s" rel="bookmark"><time class="entry-date" datetime="%3$s">%4$s</time></a>', esc_url( get_permalink() ), esc_attr( sprintf( __( 'Permalink to %s', 'travel-stories' ), the_title_attribute( 'echo=0' ) ) ), esc_attr( get_the_date( 'c' ) ), esc_html( get_the_date( 'F j, Y' ) ) ); ?>
+								<div u="slides" id="slides">
 								<div id="travel_stories_img_mountains">
 									<?php if ( has_post_thumbnail() ) {
 										$image_attributes = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'travel_stories_slider' ); ?>
@@ -81,10 +82,11 @@
 										</div>
 									</div>
 								</div>
+								</div>
 							<?php } ?>
 							<span u="arrowleft" class="travel-stories-header-block-4-left jssora03l"></span>
 							<span u="arrowright" class="travel-stories-header-block-4-right jssora03r"></span>
-						</div>
+						
 					</div>
 				</header>
 				<?php wp_reset_postdata();
