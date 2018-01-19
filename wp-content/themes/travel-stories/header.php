@@ -56,27 +56,29 @@
 										<img src="<?php echo $image_attributes[0]; ?>" u="image" />
 									<?php } ?>
 									<div class="travel-stories-blackout"></div>
-									<h6>
-										<a class="travel-stories-header-text" href="<?php the_permalink(); ?>" rel="bookmark" title="<?php _e( 'Permanent Link to ', 'travel-stories' ); the_title_attribute(); ?>">
-											<?php the_title(); ?>
-										</a>
-									</h6>
+									<div class="travel-stories-slider-post-details">
+										<h6>
+											<a class="travel-stories-header-text" href="<?php the_permalink(); ?>" rel="bookmark" title="<?php _e( 'Permanent Link to ', 'travel-stories' ); the_title_attribute(); ?>">
+												<?php the_title(); ?>
+											</a>
+										</h6>
 
-									<div class="travel-stories-header-line">
-										<hr>
-									</div>
-									<div id="travel_stories_header_block">
-										<div class="travel-stories-header-block_1">
-											<p class="travel-stories-header-text-block-1-1"><?php _e( 'POSTED BY', 'travel-stories' ); ?></p>
-
-											<p class="travel-stories-header-text-block-1-2"><?php the_author_posts_link(); ?></p>
+										<div class="travel-stories-header-line">
+											<hr>
 										</div>
-										<div class="travel-stories-header-block-2">
-											<p class="travel-stories-header-text-block-2-1"><?php _e( 'DATE', 'travel-stories' ); ?></p>
+										<div id="travel_stories_header_block">
+											<div class="travel-stories-header-block_1">
+												<p class="travel-stories-header-text-block-1-1"><?php _e( 'POSTED BY', 'travel-stories' ); ?></p>
 
-											<p class="travel-stories-header-text-block-2-2"><?php echo $date; ?></p>
+												<p class="travel-stories-header-text-block-1-2"><?php the_author_posts_link(); ?></p>
+											</div>
+											<div class="travel-stories-header-block-2">
+												<p class="travel-stories-header-text-block-2-1"><?php _e( 'DATE', 'travel-stories' ); ?></p>
+
+												<p class="travel-stories-header-text-block-2-2"><?php echo $date; ?></p>
+											</div>
+											<a class="travel-stories-more-slider" href="<?php echo get_permalink(); ?>"><?php _e( 'Explore', 'travel-stories' ); ?></a>
 										</div>
-										<a class="travel-stories-more-slider" href="<?php echo get_permalink(); ?>"><?php _e( 'Learn More', 'travel-stories' ); ?></a>
 									</div>
 								</div>
 							<?php } ?>
